@@ -127,3 +127,27 @@ main {
   padding-top: 2rem;
   padding-bottom: 2rem;
 }
+
+.github-login {
+  display: block;
+  margin: auto;
+  text-align: center;
+}
+
+.divider {
+    border-top: 1px solid #d9dadc;
+    display: block;
+    line-height: 1px;
+    margin: 15px auto ;
+    position: relative;
+    text-align: center;
+    width: 80%;
+}
+
+.divider .divider-title {
+    background: #fff;
+    font-size: 12px;
+    letter-spacing: 1px;
+    padding: 0 20px;
+    text-transform: uppercase;
+}
