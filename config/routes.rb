@@ -5,7 +5,7 @@ Rails.application.routes.draw do
   post '/login', to: 'sessions#login'
   post '/logout', to: 'sessions#logout', as: 'logout'
 
-  get "/auth/:provider/callback", to: "sessions#create"
+  get "/auth/:provider/callback", to: "sessions#create", as: 'auth_callback'
 
   resources :works
   post '/works/:id/upvote', to: 'works#upvote', as: 'upvote'

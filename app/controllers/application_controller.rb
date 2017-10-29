@@ -29,4 +29,12 @@ class ApplicationController < ActionController::Base
         redirect_to root_path
       end
     end
+
+    # def authenticate
+    #   unless session[:user_id]
+    #     flash[:status] = :failure
+    #     flash[:result_text] = "You must log in to do that"
+    #     redirect_to root_path
+    #   end
+    # end
 end
