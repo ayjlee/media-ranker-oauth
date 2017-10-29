@@ -1,9 +1,22 @@
 <h2>Log In</h2>
+
 <%= form_tag do %>
   <%= label_tag(:username, "Username") %>
   <%= text_field_tag(:username) %>
   <%= submit_tag("Log In", class: "button") %>
+
 <% end %>
+
+<div class = "divider">
+  <strong class= "divider-title">or</strong>
+</div>
+
+
+<section class = "github-login">
+  <%= link_to "Log In with Github", "auth/github", class: "button" %>
+</section>
+
+<hr />
 
 <article>
   <h4>A note about logging in</h4>
