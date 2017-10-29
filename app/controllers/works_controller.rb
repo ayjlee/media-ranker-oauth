@@ -3,6 +3,8 @@ class WorksController < ApplicationController
   # of work we're dealing with
   before_action :category_from_work, except: [:root, :index, :new, :create]
 
+  before_action :require_work_owner, only: [:update, :destroy]
+
   def root
     @albums = Work.best_albums
     @books = Work.best_books
@@ -20,6 +22,7 @@ class WorksController < ApplicationController
 
   def create
     @work = Work.new(media_params)
+    @work.user_id = @login_user.id
     @media_category = @work.category
     if @work.save
       flash[:status] = :success
@@ -97,5 +100,18 @@ private
     @work = Work.find_by(id: params[:id])
     render_404 unless @work
     @media_category = @work.category.downcase.pluralize
+  end
+
+  def work_owner?
+    @login_user == User.find_by(id: @work.user_id)
+  end
+
+  def require_work_owner
+    unless work_owner?
+      flash[:status] = :failure
+      flash[:result_text] = "You must be the owner of this work to do that"
+
+      redirect_to root_path
+    end
   end
 end
