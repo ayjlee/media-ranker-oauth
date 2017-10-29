@@ -1,7 +1,35 @@
 require 'test_helper'
 
 describe WorksController do
+
+  describe "authentication" do
+    it "does not require login for spotlight home page to be seen" do
+      get root_path
+      must_respond_with :success
+    end
+
+    it "requires login to see any other page" do
+      get works_path
+      flash[:result_text].must_equal "You must log in to do that"
+      must_redirect_to root_path
+
+    end
+
+    it "allows a logged in user to see any other page" do
+      user= users(:snoopy)
+
+      login(user)
+      get works_path
+
+      must_respond_with :success
+
+    end
+
+  end
+
+
   describe "root" do
+
     it "succeeds with all media types" do
       # Precondition: there is at least one media of each category
       %w(album book movie).each do |category|
