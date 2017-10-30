@@ -85,6 +85,7 @@ describe WorksController do
 
   describe "new" do
     it "works" do
+      login(user)
       get new_work_path
       must_respond_with :success
     end
@@ -127,6 +128,7 @@ describe WorksController do
         start_count = Work.count
 
         post works_path(category), params: work_data
+        flash[:result_text].must_equal  "Could not create #{category.singularize}"
         must_respond_with :bad_request
 
         Work.count.must_equal start_count
@@ -172,6 +174,7 @@ describe WorksController do
   describe "edit" do
 
     before do
+      user= Work.first.user
       login(user)
     end
 
@@ -195,6 +198,7 @@ describe WorksController do
 
     it "succeeds for valid data and an extant work ID" do
       work = Work.first
+      login(work.user)
       work_data = {
         work: {
           title: work.title + " addition"
@@ -238,6 +242,8 @@ describe WorksController do
 
     it "succeeds for an extant work ID" do
       work_id = Work.first.id
+      login(Work.first.user)
+
 
       delete work_path(work_id)
       must_redirect_to root_path
@@ -274,12 +280,14 @@ describe WorksController do
       post logout_path
       must_respond_with :redirect
     end
+    #changed some tests to reflect that we have a controller filter that will always redirect unauthorized users to root page if they are trying to do something they dont have permission for
+    it "redirects to root_path if no user is logged in" do
 
-    it "returns 401 unauthorized if no user is logged in" do
       start_vote_count = work.votes.count
 
       post upvote_path(work)
-      must_respond_with :unauthorized
+      must_respond_with :redirect
+      must_redirect_to root_path
 
       work.votes.count.must_equal start_vote_count
     end
@@ -291,7 +299,6 @@ describe WorksController do
       logout
 
       post upvote_path(work)
-      params[:status].must_equal :unauthorized
       flash[:result_text].must_equal "You must log in to do that"
 
       work.votes.count.must_equal start_vote_count

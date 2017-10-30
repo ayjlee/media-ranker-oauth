@@ -1,6 +1,12 @@
 require 'test_helper'
 
 describe UsersController do
+  let(:user) {users(:snoopy)}
+
+  before do
+    login(user)
+  end
+
   describe "index" do
     it "succeeds with many users" do
       # Assumption: there are many users in the DB
@@ -13,7 +19,10 @@ describe UsersController do
     it "succeeds with no users" do
       # Start with a clean slate
       Vote.destroy_all # for fk constraint
+      Work.destroy_all
       User.destroy_all
+
+      login(User.create!(username: "new user", uid: 6494534, provider: "github"))
 
       get users_path
       must_respond_with :success
@@ -22,12 +31,12 @@ describe UsersController do
 
   describe "show" do
     it "succeeds for an extant user" do
-      get user_path(User.first)
-      must_respond_with :success
+      get user_path(User.first), params: { id: User.first.id }
     end
 
     it "renders 404 not_found for a bogus user" do
       # User.last gives the user with the highest ID
+      login(user)
       bogus_user_id = User.last.id + 1
       get user_path(bogus_user_id)
       must_respond_with :not_found

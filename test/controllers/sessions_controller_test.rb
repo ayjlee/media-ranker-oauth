@@ -20,12 +20,13 @@ describe SessionsController do
     # under the works controller, since that's the only place
     # where there's an interesting difference between a logged-in
     # and not-logged-in user.
-    it "succeeds for a new user" do
+    it "succeeds for a new authenticated user" do
       username = "test_user"
       # Precondition: no user with this username exists
       User.find_by(username: username).must_be_nil
 
-      post login_path, params: { username: username }
+      get auth_callback_path(:github), params: { username: username, uid: 28362, provider: "github" }
+
       must_redirect_to root_path
     end
 
@@ -42,11 +43,12 @@ describe SessionsController do
 
     it "succeeds if a different user is already logged in" do
       username = "user_1"
-      post login_path, params: { username: username }
+
+      get auth_callback_path(:github), params: { username: username, uid: (User.last.uid + 1) , provider: "github" }
       must_redirect_to root_path
 
       username = "user_2"
-      post login_path, params: { username: username }
+      get auth_callback_path(:github), params: { username: username, uid: (User.last.uid + 1) , provider: "github" }
       must_redirect_to root_path
     end
   end
