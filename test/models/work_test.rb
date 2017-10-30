@@ -23,7 +23,7 @@ describe Work do
     it "allows the three valid categories" do
       valid_categories = ['album', 'book', 'movie']
       valid_categories.each do |category|
-        work = Work.new(title: "test", category: category)
+        work = Work.new(title: "test", category: category, user: users(:dan))
         work.valid?.must_equal true
       end
     end
@@ -31,7 +31,7 @@ describe Work do
     it "fixes almost-valid categories" do
       categories = ['Album', 'albums', 'ALBUMS', 'books', 'mOvIeS']
       categories.each do |category|
-        work = Work.new(title: "test", category: category)
+        work = Work.new(title: "test", category: category, user: users(:snoopy))
         work.valid?.must_equal true
         work.category.must_equal category.singularize.downcase
       end
@@ -55,35 +55,35 @@ describe Work do
     it "requires unique names w/in categories" do
       category = 'album'
       title = 'test title'
-      work1 = Work.new(title: title, category: category)
+      work1 = Work.new(title: title, category: category, user: users(:moomin))
       work1.save!
 
-      work2 = Work.new(title: title, category: category)
+      work2 = Work.new(title: title, category: category, user: users(:moomin))
       work2.valid?.must_equal false
       work2.errors.messages.must_include :title
     end
 
     it "does not require a unique name if the category is different" do
       title = 'test title'
-      work1 = Work.new(title: title, category: 'album')
+      work1 = Work.new(title: title, category: 'album', user: users(:dan))
       work1.save!
 
-      work2 = Work.new(title: title, category: 'book')
+      work2 = Work.new(title: title, category: 'book', user: users(:dan))
       work2.valid?.must_equal true
     end
   end
 
   describe "vote_count" do
     it "defaults to 0" do
-      work = Work.create!(title: "test title", category: "movie")
+      work = Work.create!(title: "test title", category: "movie", user: users(:kari))
       work.must_respond_to :vote_count
       work.vote_count.must_equal 0
     end
 
     it "tracks the number of votes" do
-      work = Work.create!(title: "test title", category: "movie")
+      work = Work.create!(title: "test title", category: "movie", user: users(:kari))
       4.times do |i|
-        user = User.create!(username: "user#{i}")
+        user = User.create!(username: "user#{i}", uid: i+5, provider: "github")
         Vote.create!(user: user, work: work)
       end
       work.vote_count.must_equal 4
@@ -95,15 +95,12 @@ describe Work do
     before do
       # TODO DPR: This runs pretty slow. Fixtures?
       # Create users to do the voting
-      test_users = []
-      20.times do |i|
-        test_users << User.create!(username: "user#{i}")
-      end
+      test_users = User.all
 
       # Create media to vote upon
       Work.where(category: "movie").destroy_all
       8.times do |i|
-        work = Work.create!(category: "movie", title: "test movie #{i}")
+        work = Work.create!(category: "movie", title: "test movie #{i}", user: test_users.sample)
         vote_count = rand(test_users.length)
         test_users.first(vote_count).each do |user|
           Vote.create!(work: work, user: user)
@@ -133,13 +130,13 @@ describe Work do
       movies = Work.top_ten("movie")
       movies.length.must_equal 8
 
-      Work.create(title: "phase 2 test movie 1", category: "movie")
+      Work.create(title: "phase 2 test movie 1", category: "movie", user: users(:kari))
       Work.top_ten("movie").length.must_equal 9
 
-      Work.create(title: "phase 2 test movie 2", category: "movie")
+      Work.create(title: "phase 2 test movie 2", category: "movie", user: users(:kari))
       Work.top_ten("movie").length.must_equal 10
 
-      Work.create(title: "phase 2 test movie 3", category: "movie")
+      Work.create(title: "phase 2 test movie 3", category: "movie", user: users(:kari))
       Work.top_ten("movie").length.must_equal 10
     end
   end

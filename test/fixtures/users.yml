@@ -11,3 +11,15 @@ moomin:
   uid: 54321
   provider: github
   email: moomin@moominvally.com
+
+kari:
+  username: kari_b
+  uid: 11111
+  provider: github
+  email: kari@kari.com
+
+dan:
+  username: dan-o
+  uid: 99999
+  provider: github
+  email: dan@dan.com

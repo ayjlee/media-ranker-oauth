@@ -2,6 +2,8 @@ require 'test_helper'
 
 describe WorksController do
 
+  let(:user) {users(:snoopy)}
+
   describe "authentication" do
     it "does not require login for spotlight home page to be seen" do
       get root_path
@@ -64,6 +66,10 @@ describe WorksController do
   INVALID_CATEGORIES = ["nope", "42", "", "  ", "albumstrailingtext"]
 
   describe "index" do
+    before do
+      login(user)
+    end
+
     it "succeeds when there are works" do
       Work.count.must_be :>, 0, "No works in the test fixtures"
       get works_path
@@ -85,7 +91,13 @@ describe WorksController do
   end
 
   describe "create" do
+
+    before do
+      login(user)
+    end
+
     it "creates a work with valid data for a real category" do
+
       work_data = {
         work: {
           title: "test work"
@@ -141,6 +153,10 @@ describe WorksController do
   end
 
   describe "show" do
+    before do
+      login(user)
+    end
+
     it "succeeds for an extant work ID" do
       get work_path(Work.first)
       must_respond_with :success
@@ -154,6 +170,11 @@ describe WorksController do
   end
 
   describe "edit" do
+
+    before do
+      login(user)
+    end
+
     it "succeeds for an extant work ID" do
       get edit_work_path(Work.first)
       must_respond_with :success
@@ -167,6 +188,11 @@ describe WorksController do
   end
 
   describe "update" do
+
+    before do
+      login(user)
+    end
+
     it "succeeds for valid data and an extant work ID" do
       work = Work.first
       work_data = {
@@ -205,6 +231,11 @@ describe WorksController do
   end
 
   describe "destroy" do
+
+    before do
+      login(user)
+    end
+
     it "succeeds for an extant work ID" do
       work_id = Work.first.id
 
@@ -227,8 +258,12 @@ describe WorksController do
   end
 
   describe "upvote" do
-    let(:user) { User.create!(username: "test_user") }
+    # let(:user) { User.create!(username: "test_user") }
     let(:work) { Work.first }
+
+    # before do
+    #   login(user)
+    # end
 
     def login
       post login_path, params: { username: user.username }
@@ -256,7 +291,8 @@ describe WorksController do
       logout
 
       post upvote_path(work)
-      must_respond_with :unauthorized
+      params[:status].must_equal :unauthorized
+      flash[:result_text].must_equal "You must log in to do that"
 
       work.votes.count.must_equal start_vote_count
     end

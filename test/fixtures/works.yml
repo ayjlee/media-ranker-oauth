@@ -6,6 +6,7 @@ mariner:
   description: Collaboration w/ Julie Christmas
   publication_year: 2016-04-08
   category: album
+  user: snoopy
 
 thrill:
   title: Can't Buy a Thrill
@@ -13,6 +14,7 @@ thrill:
   description: Dark, cryptic lyrics and catchy 70s hooks!
   publication_year: 1972-11-01
   category: album
+  user: snoopy
 
 poodr:
   title: Practical Object Oriented Design in Ruby
@@ -20,7 +22,9 @@ poodr:
   description: programming!
   publication_year: 2012
   category: book
+  user: dan
 
 movie:
   title: test movie - has only required fields
   category: movie
+  user: dan

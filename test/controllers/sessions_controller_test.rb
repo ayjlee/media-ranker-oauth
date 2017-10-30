@@ -54,7 +54,7 @@ describe SessionsController do
   describe "logout" do
     it "succeeds if the user is logged in" do
       # Gotta be logged in first
-      post login_path, params: { username: "test user" }
+      post login_path, params: { username: "moomin_party" }
       must_redirect_to root_path
 
       post logout_path
